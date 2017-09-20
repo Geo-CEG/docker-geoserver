@@ -23,4 +23,6 @@ docker run -d -p 8888:8080 --name=geoserver geoceg/geoserver
 ## Shell access
 docker exec -it geoserver /bin/bash
 
+## Volumes
 
+/usr/local/tomcat/webapps/geoserver/data
