@@ -18,8 +18,5 @@ RUN wget --progress=bar:force:noscroll -O geoserver.war.zip http://downloads.sou
 # Expand the memory space for Tomcat
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR} -DGEOWEBCACHE_DATA_DIR=${GEOWEBCACHE_DATA_DIR}"
 
-# Where we keep our files
-VOLUME ${GEOSERVER_DATA_DIR}
-
 # possibly add this?
 #HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -sS 127.0.0.1:8080 || exit 1
