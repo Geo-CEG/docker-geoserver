@@ -15,8 +15,10 @@ To update it, edit the Dockerfile.
 docker build -t geoceg/geoserver .
 
 ## Run, with output to terminal (-t) or detached (-d)
+````bash
 docker run -t -p 8888:8080 --name=geoserver geoceg/geoserver
 docker run -d -p 8888:8080 --name=geoserver geoceg/geoserver
+````
 
 ## Shell access
 docker exec -it geoserver /bin/bash
