@@ -16,13 +16,26 @@ docker build -t geoceg/geoserver .
 
 ## Run, with output to terminal (-t) or detached (-d)
 ````bash
-docker run -t -p 8888:8080 --name=geoserver geoceg/geoserver
-docker run -d -p 8888:8080 --name=geoserver geoceg/geoserver
+docker run -t -p 8080:8080 --name=geoserver geoceg/geoserver
+docker run -d -p 8080:8080 --name=geoserver geoceg/geoserver
 ````
+
+Persist the data in a volume.
+````bash
+docker run -d -p 8080:8080 --name=geoserver -v /home/geoserver/data:/srv/geoserver/data geoceg/geoserver
+````
+I have not figured out a good way to get the demo data copied to the volume automatically, so I start the container
+and do a 'cp' command, clumsy but effective. The commands:
+````bash
+docker exec -it geoserver bash
+cd ${CATALINA_HOME}/webapps/geoserver/data
+cp -r * /srv/geoserver/data
+````
+Then I have to go to the geoserver status page (logged in as 'admin') and click the reload button.
+After reloading I can see the demo data. This gets me far enough to step over to the PostGIS side
+of things.
 
 ## Shell access
 docker exec -it geoserver /bin/bash
 
-## Volumes
 
-/usr/local/tomcat/webapps/geoserver/data
