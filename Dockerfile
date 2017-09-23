@@ -21,15 +21,16 @@ ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingIn
 RUN mkdir -p ${GEOSERVER_DATA_DIR}
 
 WORKDIR ${CATALINA_HOME}/webapps
-RUN wget --progress=bar:force:noscroll -O geoserver.war.zip http://downloads.sourceforge.net/project/geoserver/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip &&\
+RUN rm -f geoserver &&\
+    wget --progress=bar:force:noscroll -O geoserver.war.zip http://downloads.sourceforge.net/project/geoserver/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip &&\
     unzip geoserver.war.zip &&\
     rm geoserver.war.zip
 
+# So far we just need Tomcat to start normally here so this is not needed.
+#RUN mkdir ${CATALINA_HOME}/tmp
+#WORKDIR ${CATALINA_HOME}/tmp
+#ADD start.sh ${CATALINA_HOME}/tmp
+#CMD ["./start.sh"]
+
 # possibly add this?
 #HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -sS 127.0.0.1:8080 || exit 1
-
-RUN mkdir ${CATALINA_HOME}/tmp
-WORKDIR ${CATALINA_HOME}/tmp
-ADD start.sh ${CATALINA_HOME}/tmp
-
-CMD ["./start.sh"]
