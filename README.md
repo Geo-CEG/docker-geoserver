@@ -24,8 +24,11 @@ Persist the data in a volume.
 ````bash
 docker run -d -p 8080:8080 --name=geoserver -v /home/geoserver/data:/srv/geoserver/data geoceg/geoserver
 ````
-I have not figured out a good way to get the demo data copied to the volume automatically, so I start the container
-and do a 'cp' command, clumsy but effective. The commands:
+
+Geoserver will not deploy if webapps/geoserver/ already exists, so I can't mount a volume there.
+But once geoserver deploys and starts running, it will honor the ENV setting and use the new data directory.
+I have not figured out a good way to get the demo data copied from the old data directory to the volume automatically,
+so I start the container and do a 'cp' command, clumsy but effective. The commands:
 ````bash
 docker exec -it geoserver bash
 cd ${CATALINA_HOME}/webapps/geoserver/data

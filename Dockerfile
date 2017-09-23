@@ -26,8 +26,6 @@ RUN rm -f geoserver &&\
     unzip geoserver.war.zip &&\
     rm geoserver.war.zip
 
-VOLUME [ $GEOSERVER_DATA_DIR ]
-
 # So far we just need Tomcat to start normally here so this is not needed.
 #RUN mkdir ${CATALINA_HOME}/tmp
 #WORKDIR ${CATALINA_HOME}/tmp
