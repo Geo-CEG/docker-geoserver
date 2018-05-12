@@ -1,5 +1,5 @@
 # docker-geoserver
-Builds geoceg/geoserver, which is a Docker container containing Geoserver, Geowebcache and Tomcat.
+Builds geoceg/geoserver, which is a Docker container containing Geoserver and Geowebcache.
 
 At Geo-CEG, we use Geoserver primarily as a front end for PostGIS.
 Geoserver is a Java web app, so this container is built on Tomcat 9.
@@ -11,21 +11,12 @@ Some might argue that I have two services running in one Docker container and th
 bad form. Okay, point taken. It works for me this way though. It's really easy to split them
 apart into two containers by copying this Dockerfile. I've done it.
 
-I got tired of wrestling with sourceforge.net inside the Docker file
-(with "RUN wget") At the moment, geoserver release is
-2.13.0. Geowebcache is at release 1.13.0, To update them, download new
-files and edit the Dockerfile. Here are the download commands.
-
-wget --progress=bar:force:noscroll -O geoserver.war.zip https://sourceforge.net/projects/geoserver/files/geoserver/2.13.0/geoserver-2.13.0-war.zip/download
-unzip geoserver.war.zip
-
-wget --progress=bar:force:noscroll -O geowebcache.war.zip https://sourceforge.net/projects/geowebcache/files/geowebcache/1.13.0/geowebcache-1.13.0-war.zip/download
-unzip geowebcache.war.zip
 
 # Some useful commands
 
 ## Build and tag (-t) as geoceg/geoserver
- docker build -t geoceg/geoserver .
+
+ docker build --dns=192.168.123.2 -t geoceg/geoserver .
 
 ## Create a volume to persist settings, Storage for geowebcache is in the /geoserver/gwc subdirectory.
 
@@ -33,6 +24,7 @@ unzip geowebcache.war.zip
  
  # Run, with output to terminal (-t) or detached (-d)
  # URL will be http://bellman.wildsong.biz:8888/geoserver or something like it
+
  docker run -t -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
  docker run -d -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
 
@@ -41,6 +33,24 @@ unzip geowebcache.war.zip
 
 ## Push to docker hub
  docker push geoceg/geoserver
+
+Geoserver will not deploy if webapps/geoserver/ already exists, so I can't mount a volume there.
+But once geoserver deploys and starts running, it will honor the ENV setting and use the new data directory.
+I have not figured out a good way to get the demo data copied from the old data directory to the volume automatically,
+so I start the container and do a 'cp' command, clumsy but effective. The commands:
+````bash
+docker exec -it geoserver bash
+cd ${CATALINA_HOME}/webapps/geoserver/data
+cp -r * /srv/geoserver/data
+````
+Then I have to go to the geoserver status page (logged in as 'admin') and click the reload button.
+After reloading I can see the demo data. This gets me far enough to step over to the PostGIS side
+of things.
+
+## Shell access
+docker exec -it geoserver /bin/bash
+
+
 
 # Master password
 
