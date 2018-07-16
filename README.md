@@ -1,7 +1,6 @@
 # docker-geoserver
-Builds geoceg/geoserver, which is a Docker container containing Geoserver and Geowebcache.
+Builds geoceg/geoserver, which is a Docker container containing Geoserver, Geowebcache, and GeoGIG..
 
-At Geo-CEG, we use Geoserver primarily as a front end for PostGIS.
 Geoserver is a Java web app, so this container is built on Tomcat 9.
 
 For complete information on Geoserver, see http://geoserver.org/
@@ -11,12 +10,11 @@ Some might argue that I have two services running in one Docker container and th
 bad form. Okay, point taken. It works for me this way though. It's really easy to split them
 apart into two containers by copying this Dockerfile. I've done it.
 
-
 # Some useful commands
 
 ## Build and tag (-t) as geoceg/geoserver
 
- docker build --dns=192.168.123.2 -t geoceg/geoserver .
+ docker build -t geoceg/geoserver .
 
 ## Create a volume to persist settings, Storage for geowebcache is in the /geoserver/gwc subdirectory.
 

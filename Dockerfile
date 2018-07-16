@@ -5,6 +5,7 @@ MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 ENV GEOSERVER_URL   https://sourceforge.net/projects/geoserver/files/GeoServer/2.13.1/geoserver-2.13.1-war.zip/download
 ENV GEOWEBCACHE_URL https://sourceforge.net/projects/geowebcache/files/geowebcache/1.13.1/geowebcache-1.13.1-war.zip/download
+ENV GEOGIG_URL      https://github.com/locationtech/geogig/releases/download/v1.2.0-RC1/geoserver-2.13-SNAPSHOT-geogig-plugin.zip
 
 ENV GEOSERVER_DATA_DIR   /geoserver
 
@@ -21,6 +22,13 @@ RUN rm -f geowebcache &&\
     wget --progress=bar:force:noscroll -O geowebcache.war.zip ${GEOWEBCACHE_URL} &&\
     unzip geowebcache.war.zip &&\
     rm geowebcache.war.zip  && rm -f LICENSE.txt && rm -f README.md
+
+WORKDIR ${CATALINA_HOME}/webapps/geoserver/WEB-INF/lib
+
+RUN rm -f geogig &&\
+    wget --progress=bar:force:noscroll -O geogig.zip ${GEOGIG_URL} &&\
+    unzip geogig.zip &&\
+    rm geogig.zip
 
 WORKDIR ${CATALINA_HOME}
 
