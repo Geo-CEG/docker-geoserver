@@ -3,8 +3,8 @@ MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 #RUN apt-get update && apt-get install wget unzip
 
-ENV GEOSERVER_URL   https://sourceforge.net/projects/geoserver/files/GeoServer/2.13.0/geoserver-2.13.1-war.zip/download
-ENV GEOWEBCACHE_URL https://sourceforge.net/projects/geowebcache/files/geowebcache/1.13.0/geowebcache-1.13.1-war.zip/download
+ENV GEOSERVER_URL   https://sourceforge.net/projects/geoserver/files/GeoServer/2.13.1/geoserver-2.13.1-war.zip/download
+ENV GEOWEBCACHE_URL https://sourceforge.net/projects/geowebcache/files/geowebcache/1.13.1/geowebcache-1.13.1-war.zip/download
 
 ENV GEOSERVER_DATA_DIR   /geoserver
 
