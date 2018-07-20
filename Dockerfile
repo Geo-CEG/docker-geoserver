@@ -25,10 +25,10 @@ RUN rm -f geowebcache &&\
 
 WORKDIR ${CATALINA_HOME}/webapps/geoserver/WEB-INF/lib
 
-RUN rm -f geogig &&\
-    wget --progress=bar:force:noscroll -O geogig.zip ${GEOGIG_URL} &&\
-    unzip geogig.zip &&\
-    rm geogig.zip
+#RUN rm -f geogig &&\
+#    wget --progress=bar:force:noscroll -O geogig.zip ${GEOGIG_URL} &&\
+#    unzip geogig.zip &&\
+#    rm geogig.zip
 
 WORKDIR ${CATALINA_HOME}
 
