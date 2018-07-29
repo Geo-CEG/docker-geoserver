@@ -1,5 +1,5 @@
 # docker-geoserver
-Builds geoceg/geoserver, which is a Docker container containing Geoserver, Geowebcache, and GeoGIG..
+Builds geoceg/geoserver, which is a Docker container containing Geoserver and Geowebcache.
 
 Geoserver is a Java web app, so this container is built on Tomcat 9.
 

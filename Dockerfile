@@ -1,4 +1,4 @@
-FROM tomcat:8-jre8
+FROM tomcat:9-jre8
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 #RUN apt-get update && apt-get install wget unzip
@@ -6,7 +6,6 @@ MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 ENV GEOSERVER_URL   https://sourceforge.net/projects/geoserver/files/GeoServer/2.13.2/geoserver-2.13.2-war.zip/download
 ENV GEOWEBCACHE_URL https://sourceforge.net/projects/geowebcache/files/geowebcache/1.13.2/geowebcache-1.13.2-war.zip/download
-ENV GEOGIG_URL      https://github.com/locationtech/geogig/releases/download/v1.2.0-RC1/geoserver-2.13-SNAPSHOT-geogig-plugin.zip
 
 ENV GEOSERVER_DATA_DIR   /geoserver
 RUN mkdir -p ${GEOSERVER_DATA_DIR}
@@ -23,20 +22,13 @@ RUN rm -f geowebcache &&\
     unzip geowebcache.war.zip &&\
     rm geowebcache.war.zip  && rm -f LICENSE.txt && rm -f README.md
 
-#WORKDIR ${CATALINA_HOME}/webapps/geoserver/WEB-INF/lib
-# Geogig not working yet.
-#RUN rm -f geogig &&\
-#    wget --progress=bar:force:noscroll -O geogig.zip ${GEOGIG_URL} &&\
-#    unzip geogig.zip &&\
-#    rm geogig.zip
-
 WORKDIR ${CATALINA_HOME}
 
 # Expand the memory space for Tomcat
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}"
 
 # Allow Tomcat "manager" access from my network 
-ADD manager-context.xml ${CATALINA_HOME}/webapps/manager/META-INF/
+ADD manager-context.xml ${CATALINA_HOME}/webapps/manager/META-INF/context.xml
 
 # Add password file
 ADD tomcat-users.xml ${CATALINA_HOME}/conf
