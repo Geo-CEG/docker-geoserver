@@ -10,6 +10,10 @@ Some might argue that I have two services running in one Docker container and th
 bad form. Okay, point taken. It works for me this way though. It's really easy to split them
 apart into two containers by copying this Dockerfile. I've done it.
 
+There is a tomcat-users.xml file where you can specify a password. Edit it to change passwords.
+I also put in a context.xml file with 192.168.x.x access allowed to the manager app;
+by default it's only accessible from localhost. Edit it if you are not in a 192.168 network.
+
 # Some useful commands
 
 ## Build and tag (-t) as geoceg/geoserver
