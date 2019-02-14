@@ -28,13 +28,16 @@ by default it's only accessible from localhost. Edit it if you are not in a 192.
 With these startup commands, the URL for me will be http://bellman.wildsong.biz:8888/geoserver on my private network
 
 Terminal mode, initial tests
-   docker run -t -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
+
+    docker run -t -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
 
 Normal mode
-   docker run -d -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
+
+    docker run -d -p 8888:8080 --name=geoserver -v geoserver_files:/geoserver geoceg/geoserver
 
 ## Shell access (once you do one of the previous commands to start an instance.)
-   docker exec -it geoserver /bin/bash
+
+    docker exec -it geoserver /bin/bash
 
 ## Master password
 
