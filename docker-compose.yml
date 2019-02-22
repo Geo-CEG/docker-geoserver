@@ -1,0 +1,97 @@
+version: '3.7'
+
+services:
+
+  db:
+    container_name: db4geoserver
+    image: mdillon/postgis:11
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
+      #POSTGRES_USER:
+      #POSTGRES_DB:
+      #POSTGRES_INITDB_ARGS:
+      #POSTGRES_INITDB_XLOGDIR:
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: volume
+        source: db_data
+        target: /var/lib/postgresql/data
+
+  geoserver:
+    container_name: geoserver
+    image: geoceg/geoserver:latest
+    environment:
+      GEOSERVER_DATA_DIR: /geoserver
+    ports:
+      - "8888:8080"
+    volumes:
+      - type: volume
+        source: geoserver_data
+        target: /geoserver
+
+  geowebcache:
+    container_name: geowebcache4geoserver
+    image: geoceg/geowebcache:latest
+    environment:
+      GEOWEBCACHE_DATA_DIR: /geowebcache
+    ports:
+      - "8887:8080"
+    volumes:
+      - type: volume
+        source: geowebcache_data
+        target: /geowebcache
+  
+    
+  pgadmin:
+    container_name: pgadmin4geoserver
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8889:80"
+    volumes:
+      - type: volume
+        source: pgadmin_data
+        target: /var/lib/pgadmin
+
+  # Support full HTTP and HTTPS
+  # Provides proxies for GeoServer, GeoWebCache, and PGadmin
+  nginx:
+    image: nginx
+    build:
+      context: nginx
+      args:
+        
+
+    container_name: nginx4geoserver
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: volume
+        source: static_content
+        target: /usr/share/nginx/html
+    depends_on:
+      - geoserver
+      - pgadmin
+
+volumes:
+  db_data:
+    name: geoserver_postgis_data
+
+   static_content:
+    name: geoserver_static_content
+    
+  geoserver_data:
+    name: geoserver_data
+  
+  geoserver_data:
+    name: geoserver_geowebcache_data
+  
+  pgadmin_data:
+    name: geoserver_pgadmin_data
+

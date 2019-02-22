@@ -1,27 +1,18 @@
 FROM tomcat:9-jre8
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
-#RUN apt-get update && apt-get install wget unzip
+ENV GEOSERVER_VERSION   2.14.2
 
-
-ENV GEOSERVER_URL   https://sourceforge.net/projects/geoserver/files/GeoServer/2.14.2/geoserver-2.14.2-war.zip/download
-ENV GEOWEBCACHE_URL https://sourceforge.net/projects/geowebcache/files/geowebcache/1.14.2/geowebcache-1.14.2-war.zip/download
-
+# This is the "new" location for geoserver's data files (It can't be inside the tomcat folder.)
 ENV GEOSERVER_DATA_DIR   /geoserver
 RUN mkdir -p ${GEOSERVER_DATA_DIR}
 
 WORKDIR ${CATALINA_HOME}/webapps
-
 RUN rm -f geoserver &&\
-    wget --progress=bar:force:noscroll -O geoserver.war.zip ${GEOSERVER_URL} &&\
+    wget --progress=bar:force:noscroll -O geoserver.war.zip \
+    https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download &&\
     unzip geoserver.war.zip &&\
     rm geoserver.war.zip && rm -f LICENSE.txt && rm -f README.md
-
-RUN rm -f geowebcache &&\
-    wget --progress=bar:force:noscroll -O geowebcache.war.zip ${GEOWEBCACHE_URL} &&\
-    unzip geowebcache.war.zip &&\
-    rm geowebcache.war.zip  && rm -f LICENSE.txt && rm -f README.md
-
 WORKDIR ${CATALINA_HOME}
 
 # Expand the memory space for Tomcat
@@ -39,14 +30,7 @@ ADD tomcat-users.xml ${CATALINA_HOME}/conf
 # Q. Will geoserver look for data in the new location?
 # A. The new one.
 #
-# Q. accounts and authentication??
-
-
-# So far we just need Tomcat to start normally here so this is not needed.
-#RUN mkdir ${CATALINA_HOME}/tmp
-#WORKDIR ${CATALINA_HOME}/tmp
-#ADD start.sh ${CATALINA_HOME}/tmp
-#CMD ["./start.sh"]
+# Q. How should I handle accounts and authentication??
 
 # Possibly add this health check?
 #HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -sS 127.0.0.1:8080 || exit 1

@@ -1,0 +1,12 @@
+# Copy this file to .env then customize it for your site.
+
+# PostGIS
+DB_ADMIN_PASSWORD=SECRET
+
+# pgadmin4
+PGADMIN_USER=brian@wildsong.biz
+PGADMIN_PASSWORD=SECRET
+
+# nginx
+HOSTNAME=bellman.wildsong.biz
+
