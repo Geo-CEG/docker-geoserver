@@ -1,7 +1,5 @@
 version: '3.7'
-
 services:
-
   db:
     container_name: db4geoserver
     image: mdillon/postgis:11
@@ -12,8 +10,6 @@ services:
       #POSTGRES_DB:
       #POSTGRES_INITDB_ARGS:
       #POSTGRES_INITDB_XLOGDIR:
-    ports:
-      - "5432:5432"
     volumes:
       - type: volume
         source: db_data
@@ -24,8 +20,6 @@ services:
     image: geoceg/geoserver:latest
     environment:
       GEOSERVER_DATA_DIR: /geoserver
-    ports:
-      - "8888:8080"
     volumes:
       - type: volume
         source: geoserver_data
@@ -36,13 +30,10 @@ services:
     image: geoceg/geowebcache:latest
     environment:
       GEOWEBCACHE_DATA_DIR: /geowebcache
-    ports:
-      - "8887:8080"
     volumes:
       - type: volume
         source: geowebcache_data
         target: /geowebcache
-  
     
   pgadmin:
     container_name: pgadmin4geoserver
@@ -50,8 +41,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    ports:
-      - "8889:80"
+      # Added SCRIPT_NAME to solve this problem: https://stackoverflow.com/questions/46381668/pgadmin4-wont-work-in-specific-location-behind-nginx
+      SCRIPT_NAME: /pgadmin4
     volumes:
       - type: volume
         source: pgadmin_data
@@ -61,20 +52,30 @@ services:
   # Provides proxies for GeoServer, GeoWebCache, and PGadmin
   nginx:
     image: nginx
-    build:
-      context: nginx
-      args:
-        
-
+    command: /bin/bash -c "sed 's/%VIRTUALHOST%/${VIRTUALHOST}/' < /etc/nginx/conf.d/virtualhost.conf.template > /etc/nginx/conf.d/virtualhost.conf && nginx -g 'daemon off;'"
     container_name: nginx4geoserver
-
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - type: volume
         source: static_content
-        target: /usr/share/nginx/html
+        target: /var/www/html/
+      - type: bind
+        source: ./virtualhost.conf.template
+        target: /etc/nginx/conf.d/virtualhost.conf.template
+      - type: bind
+        source: ./proxy.d
+        target: /etc/nginx/proxy.d
+      - type: bind
+        source: ${SSL_CERT}
+        target: /tmp/ssl_cert.pem
+      - type: bind
+        source: ${SSL_KEY}
+        target: /tmp/ssl_key.pem
+      - type: bind
+        source: ${SSL_DHPARAMS}
+        target: /tmp/dhparams.pem
     depends_on:
       - geoserver
       - pgadmin
@@ -83,13 +84,13 @@ volumes:
   db_data:
     name: geoserver_postgis_data
 
-   static_content:
+  static_content:
     name: geoserver_static_content
     
   geoserver_data:
     name: geoserver_data
   
-  geoserver_data:
+  geowebcache_data:
     name: geoserver_geowebcache_data
   
   pgadmin_data:

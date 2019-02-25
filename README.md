@@ -27,6 +27,10 @@ FIXME -- GeoWebCache gets installed and started but geoserver does not know it's
 
 Copy dotenv-sample to .env and then edit it to specify site-specific information including passwords and hostname.
 
+* geoserver
+* geowebcache
+* pgadmin4
+
 ## Run everything
 
 This command starts nginx, postgis, geoserver, geowebcache, and pgadmin4
@@ -90,3 +94,4 @@ When I want to test a new container locally, I do this.
  
 Once I am convinced it works then I commit all changes to github and Docker
 will autobuild a new version for you.
+
