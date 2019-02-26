@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   db:
-    container_name: db4geoserver
+    container_name: geoserver-db
     image: mdillon/postgis:11
     environment:
       PGDATA: /var/lib/postgresql/data
@@ -10,50 +10,57 @@ services:
       #POSTGRES_DB:
       #POSTGRES_INITDB_ARGS:
       #POSTGRES_INITDB_XLOGDIR:
+    # I don't really need to put the PostGIS data in a separate volume.
+    # Can having it in a volume make it easier to back up?
+    # I think it's on SSD where it is, so fast but not a lot of space.
     volumes:
       - type: volume
         source: db_data
         target: /var/lib/postgresql/data
+    restart: unless-stopped
 
   geoserver:
     container_name: geoserver
-    image: geoceg/geoserver:latest
+    build:
+        context: geoserver
     environment:
       GEOSERVER_DATA_DIR: /geoserver
+    # Have to use a volume for this, since it's shared with geowebcache
     volumes:
       - type: volume
         source: geoserver_data
         target: /geoserver
+    restart: unless-stopped
 
   geowebcache:
-    container_name: geowebcache4geoserver
+    container_name: geoserver-geowebcache
     image: geoceg/geowebcache:latest
     environment:
-      GEOWEBCACHE_DATA_DIR: /geowebcache
+      GEOWEBCACHE_DATA_DIR: /geowebserver/gwc
     volumes:
       - type: volume
-        source: geowebcache_data
-        target: /geowebcache
+        source: geoserver_data
+        target: /geoserver
+    depends_on:
+      - geoserver
+    restart: unless-stopped
     
   pgadmin:
-    container_name: pgadmin4geoserver
+    container_name: geoserver-pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
       # Added SCRIPT_NAME to solve this problem: https://stackoverflow.com/questions/46381668/pgadmin4-wont-work-in-specific-location-behind-nginx
       SCRIPT_NAME: /pgadmin4
-    volumes:
-      - type: volume
-        source: pgadmin_data
-        target: /var/lib/pgadmin
 
   # Support full HTTP and HTTPS
   # Provides proxies for GeoServer, GeoWebCache, and PGadmin
   nginx:
-    image: nginx
+    build:
+        context: nginx
     command: /bin/bash -c "sed 's/%VIRTUALHOST%/${VIRTUALHOST}/' < /etc/nginx/conf.d/virtualhost.conf.template > /etc/nginx/conf.d/virtualhost.conf && nginx -g 'daemon off;'"
-    container_name: nginx4geoserver
+    container_name: geoserver-nginx
     ports:
       - "80:80"
       - "443:443"
@@ -62,10 +69,10 @@ services:
         source: static_content
         target: /var/www/html/
       - type: bind
-        source: ./virtualhost.conf.template
+        source: ./nginx/virtualhost.conf.template
         target: /etc/nginx/conf.d/virtualhost.conf.template
       - type: bind
-        source: ./proxy.d
+        source: ./nginx/proxy.d
         target: /etc/nginx/proxy.d
       - type: bind
         source: ${SSL_CERT}
@@ -79,6 +86,7 @@ services:
     depends_on:
       - geoserver
       - pgadmin
+    restart: unless-stopped
 
 volumes:
   db_data:
@@ -86,13 +94,6 @@ volumes:
 
   static_content:
     name: geoserver_static_content
-    
+
   geoserver_data:
     name: geoserver_data
-  
-  geowebcache_data:
-    name: geoserver_geowebcache_data
-  
-  pgadmin_data:
-    name: geoserver_pgadmin_data
-
