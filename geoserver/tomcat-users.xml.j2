@@ -36,6 +36,6 @@ limitations under the License.
   -->
       <role rolename="tomcat"/>
       <role rolename="manager-gui"/>
-      <user username="tomcat" password="s3cret" roles="tomcat"/>
-      <user username="admin" password="s3cret" roles="manager-gui"/>
+      <user username="tomcat" password="{{ tomcat_password }}" roles="tomcat"/>
+      <user username="admin" password="{{ tomcat_password }}" roles="manager-gui"/>
 </tomcat-users>

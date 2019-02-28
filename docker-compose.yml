@@ -2,14 +2,11 @@ version: '3.7'
 services:
   db:
     container_name: geoserver-db
+    env_file: .env
     image: mdillon/postgis:11
     environment:
       PGDATA: /var/lib/postgresql/data
       POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
-      #POSTGRES_USER:
-      #POSTGRES_DB:
-      #POSTGRES_INITDB_ARGS:
-      #POSTGRES_INITDB_XLOGDIR:
     # I don't really need to put the PostGIS data in a separate volume.
     # Can having it in a volume make it easier to back up?
     # I think it's on SSD where it is, so fast but not a lot of space.
@@ -21,11 +18,16 @@ services:
 
   geoserver:
     container_name: geoserver
+    env_file: .env
     environment:
       GEOSERVER_DATA_DIR: /geoserver
     build:
-        context: geoserver
-        dockerfile: Dockerfile.geoserver
+      context: ./geoserver
+      dockerfile: Dockerfile.geoserver
+      args:
+        TOMCAT_PASSWORD: ${TOMCAT_PASSWORD}
+        TOMCAT_LOCALNET: ${TOMCAT_LOCALNET}
+        GEOSERVER_DATA_DIR: /geoserver
     # Have to use a volume for this, since it's shared with geowebcache
     volumes:
       - type: volume
@@ -35,21 +37,27 @@ services:
 
   geowebcache:
     container_name: geoserver-geowebcache
+    env_file: .env
     environment:
       GEOWEBCACHE_DATA_DIR: /geowebserver/gwc
     build:
-        context: geoserver
-        dockerfile: Dockerfile.geowebcache
+      context: ./geoserver
+      dockerfile: Dockerfile.geowebcache
+      args:
+        TOMCAT_PASSWORD: ${TOMCAT_PASSWORD}
+        TOMCAT_LOCALNET: ${TOMCAT_LOCALNET}
+        GEOWEBCACHE_DATA_DIR: /geowebserver/gwc
     volumes:
       - type: volume
         source: geoserver_data
-        target: /geoserver
+        target: /geowebserver/gwc
     depends_on:
       - geoserver
     restart: unless-stopped
     
   pgadmin:
     container_name: geoserver-pgadmin
+    env_file: .env
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER}
@@ -60,10 +68,12 @@ services:
   # Support full HTTP and HTTPS
   # Provides proxies for GeoServer, GeoWebCache, and PGadmin
   nginx:
-    build:
-        context: nginx
-####    command: /bin/bash -c "sed 's/%VIRTUALHOST%/${VIRTUALHOST}/' < /etc/nginx/conf.d/virtualhost.conf.template > /etc/nginx/conf.d/virtualhost.conf && nginx -g 'daemon off;'"
     container_name: geoserver-nginx
+    env_file: .env
+    build:
+      context: ./nginx
+      args:
+        virtualhost: ${VIRTUALHOST}
     ports:
       - "80:80"
       - "443:443"

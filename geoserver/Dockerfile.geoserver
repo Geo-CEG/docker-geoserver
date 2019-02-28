@@ -1,7 +1,7 @@
 FROM tomcat:9-jre8
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
-ENV GEOSERVER_VERSION   2.14.2
+ENV GEOSERVER_VERSION 2.14.2
 
 # This is the "new" location for geoserver's data files (It can't be inside the tomcat folder.)
 ENV GEOSERVER_DATA_DIR   /geoserver
@@ -18,11 +18,15 @@ WORKDIR ${CATALINA_HOME}
 # Expand the memory space for Tomcat
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}"
 
-# Allow Tomcat "manager" access from my network 
-ADD manager-context.xml ${CATALINA_HOME}/webapps/manager/META-INF/context.xml
+# Allow Tomcat "manager" access from my network
+WORKDIR ${CATALINA_HOME}/webapps/manager/META-INF
+ADD context.xml.j2 ${CATALINA_HOME}/webapps/manager/META-INF/
+RUN /bin/sed "s/{{ localnet }}/${TOMCAT_LOCALNET}/" < context.xml.j2 > context.conf
 
 # Add password file
-ADD tomcat-users.xml ${CATALINA_HOME}/conf
+WORKDIR ${CATALINA_HOME}/conf/
+ADD tomcat-users.xml.j2 ${CATALINA_HOME}/conf/
+RUN /bin/sed "s/{{ tomcat_password }}/${TOMCAT_PASSWORD}/" < tomcat-users.xml.j2 > tomcat-users.xml
 
 # Q. If I define GEOSERVER_DATA_DIR, will the sample data get deployed to the new location or the old?
 # A. No, it's deployed to the old location. 

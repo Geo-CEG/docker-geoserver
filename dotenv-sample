@@ -1,12 +1,15 @@
-# Copy this file to .env then customize it for your site.
-
 # PostGIS
-DB_ADMIN_PASSWORD=SECRET
+DB_ADMIN_PASSWORD=PutPasswordHere
 
 # pgadmin4
-PGADMIN_USER=brian@wildsong.biz
-PGADMIN_PASSWORD=SECRET
+PGADMIN_USER=PutAnEmailAddressHere
+PGADMIN_PASSWORD=PutPasswordHere
 
 # nginx
-HOSTNAME=bellman.wildsong.biz
+VIRTUALHOST=Put_FQDN_name_here
 
+# Tomcat admin access (for GeoServer and GeoWebCache)
+TOMCAT_PASSWORD=PutPasswordHere
+
+# You must be on this network to get management access.
+TOMCAT_LOCALNET='192\.168\.123\.\d+'

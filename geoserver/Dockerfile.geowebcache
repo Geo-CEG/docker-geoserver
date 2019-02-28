@@ -18,11 +18,15 @@ WORKDIR ${CATALINA_HOME}
 # Expand the memory space for Tomcat
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}"
 
-# Allow Tomcat "manager" access from my network 
-ADD  manager-context.xml ${CATALINA_HOME}/webapps/manager/META-INF/context.xml
+# Allow Tomcat "manager" access from my network
+WORKDIR ${CATALINA_HOME}/webapps/manager/META-INF
+ADD context.xml.j2 ${CATALINA_HOME}/webapps/manager/META-INF/
+RUN /bin/sed "s/{{ localnet }}/${TOMCAT_LOCALNET}/" < context.xml.j2 > context.conf
 
 # Add password file
-ADD tomcat-users.xml ${CATALINA_HOME}/conf
+WORKDIR ${CATALINA_HOME}/conf/
+ADD tomcat-users.xml.j2 ${CATALINA_HOME}/conf/
+RUN /bin/sed "s/{{ tomcat_password }}/${TOMCAT_PASSWORD}/" < tomcat-users.xml.j2 > tomcat-users.xml
 
 # Possibly add this health check?
 #HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -sS 127.0.0.1:8080 || exit 1
