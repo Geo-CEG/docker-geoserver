@@ -11,13 +11,15 @@ ADD proxy.d/pgadmin.conf proxy.d/
 ARG virtualhost
 LABEL virtualhost=${virtualhost}
 
-ADD fullchain.pem certs/ssl_cert.pem
-ADD privkey.pem certs/ssl_key.pem
-ADD dhparams.pem certs/dhparams.pem
+# I'm not convinced this is worth the extra effort
+#ADD fullchain.pem certs/ssl_cert.pem
+#ADD privkey.pem certs/ssl_key.pem
+#ADD dhparams.pem certs/dhparams.pem
 
 WORKDIR /etc/nginx/conf.d/
 ADD virtualhost.conf.j2 /etc/nginx/conf.d/
-ADD virtualhost_ssl.conf /etc/nginx/snippets/
+
+#ADD virtualhost_ssl.conf /etc/nginx/snippets/
 
 # If I need more flexibility I can switch to using jinja2 templates
 #RUN pip install j2cli

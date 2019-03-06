@@ -23,6 +23,7 @@ services:
     env_file: .env
     environment:
       GEOSERVER_DATA_DIR: /geoserver
+      ENABLE_JSONP: "true"
     build:
       context: ./geoserver
       dockerfile: Dockerfile.geoserver
