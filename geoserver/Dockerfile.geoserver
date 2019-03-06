@@ -23,18 +23,14 @@ WORKDIR ${CATALINA_HOME}/webapps/manager/META-INF
 ADD context.xml.j2 ${CATALINA_HOME}/webapps/manager/META-INF/
 RUN /bin/sed "s/{{ localnet }}/${TOMCAT_LOCALNET}/" < context.xml.j2 > context.conf
 
-# Add password file
+# Tomcat configuration 
 WORKDIR ${CATALINA_HOME}/conf/
-ADD tomcat-users.xml.j2 ${CATALINA_HOME}/conf/
-RUN /bin/sed "s/{{ tomcat_password }}/${TOMCAT_PASSWORD}/" < tomcat-users.xml.j2 > tomcat-users.xml
 
-# Q. If I define GEOSERVER_DATA_DIR, will the sample data get deployed to the new location or the old?
-# A. No, it's deployed to the old location. 
-#
-# Q. Will geoserver look for data in the new location?
-# A. The new one.
-#
-# Q. How should I handle accounts and authentication??
+# Add password template file
+ADD tomcat-users.xml.j2 ${CATALINA_HOME}/conf/
+
+# Install the passwords from ENVIRONMENT into tomcat-users.xml
+RUN /bin/sed "s/{{ tomcat_password }}/${TOMCAT_PASSWORD}/" < tomcat-users.xml.j2 > tomcat-users.xml
 
 # Possibly add this health check?
 #HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -sS 127.0.0.1:8080 || exit 1
