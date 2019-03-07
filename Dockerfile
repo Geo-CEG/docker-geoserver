@@ -11,6 +11,7 @@ ENV GEOWEBCACHE_CACHE_DIR /geoserver/gwc
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}"
 
 ADD https://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip/download /tmp/geoserver.war.zip
+
 ADD https://sourceforge.net/projects/geowebcache/files/geowebcache/${GEOWEBCACHE_VERSION}/geowebcache-${GEOWEBCACHE_VERSION}-war.zip/download /tmp/geowebcache.war.zip
 
 WORKDIR ${CATALINA_HOME}/webapps

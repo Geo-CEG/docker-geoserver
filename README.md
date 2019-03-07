@@ -42,7 +42,7 @@ Anyway here are the steps for now:
 
 ````
 docker build -t geoserver .
-docker run -it --name geoserver_build geoserver
+docker run -it --name geoserver_build -v geoserver_data:/geoserver geoserver
 ````
 
 Now wait for Tomcat to start and watch log files... the last line will resemble this.
@@ -51,7 +51,7 @@ Then stop the container (from another window) and commit a new image.
 
 ````
 docker stop geoserver_build
-docker commit geoserver_build geoserver
+docker commit geoserver_build geoserver_deployed
 ````
 
 Now you have an image called "geoserver" that has the geoserver.war file deployed.
@@ -61,6 +61,6 @@ Now you can push the image to the Hub.
 
 ````
 GEOSERVER_VERSION=2.15.0
-docker tag geoserver geoceg/geoserver:${GEOSERVER_VERSION}
+docker tag geoserver_deployed geoceg/geoserver:${GEOSERVER_VERSION}
 docker push geoceg/geoserver
 ````
