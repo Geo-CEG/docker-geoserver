@@ -5,7 +5,7 @@ ENV GEOSERVER_VERSION 2.15.0
 ENV GEOWEBCACHE_VERSION 1.15.0
 
 ENV GEOSERVER_DATA_DIR /geoserver
-ENV GEOWEBCACHE_CACHE_DIR /geoserver/gwc
+ENV GEOWEBCACHE_DATA_DIR /geoserver/gwc
 
 # Expand the memory space for Tomcat
 ENV CATALINA_OPTS "-Djava.awt.headless=true -Xmx768m -Xrs -XX:PerfDataSamplingInterval=500 -Dorg.geotools.referencing.forceXY=true -DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}"
@@ -22,7 +22,7 @@ RUN rm -f geoserver geowebcache &&\
     rm /tmp/geoserver.war.zip /tmp/geowebcache.war.zip
 
 # These folders have to exist for the deployment to be happy.
-RUN mkdir -p ${GEOWEBCACHE_CACHE_DIR}
+RUN mkdir ${GEOSERVER_DATA_DIR} && mkdir ${GEOWEBCACHE_DATA_DIR}
 VOLUME ${GEOSERVER_DATA_DIR}
 
 # When the container launches it starts Tomcat, which will deploy the WAR files.
