@@ -61,6 +61,10 @@ Now you can push the image to the Hub.
 
 ````
 GEOSERVER_VERSION=2.15.1
+
 docker tag geoserver_deployed wildsong/geoserver:${GEOSERVER_VERSION}
-docker push wildsong/geoserver
+docker push wildsong/geoserver:${GEOSERVER_VERSION}
+
+docker tag geoserver_deployed wildsong/geoserver:latest
+docker push wildsong/geoserver:latest
 ````
