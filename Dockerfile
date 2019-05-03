@@ -1,4 +1,4 @@
-FROM tomcat:9-jre8-alpine
+FROM tomcat:9-jre11
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 ENV GEOSERVER_VERSION 2.15.1
