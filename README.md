@@ -7,9 +7,9 @@ I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
 any benefit to doing it that way. They are tightly integrated.
 
-Latest version of GeoServer is 2.15.0
+Latest version of GeoServer is 2.15.1
 
-Latest version of GeoWebCache is 1.15.0
+Latest version of GeoWebCache is 1.15.1
 
 For complete information on GeoServer, see http://www.geoserver.org/
 
@@ -60,7 +60,7 @@ You can see what changed with the command "docker diff geoserver" if you want.
 Now you can push the image to the Hub.
 
 ````
-GEOSERVER_VERSION=2.15.0
-docker tag geoserver_deployed geoceg/geoserver:${GEOSERVER_VERSION}
-docker push geoceg/geoserver
+GEOSERVER_VERSION=2.15.1
+docker tag geoserver_deployed wildsong/geoserver:${GEOSERVER_VERSION}
+docker push wildsong/geoserver
 ````
