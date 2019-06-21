@@ -1,7 +1,11 @@
-# docker-geoserver
+#docker-geoserver
 
 This project deploys GeoServer and GeoWebCache into 
 a standard Tomcat 9 container.
+
+NOTE that I am using the Tomcat build on Debian not Alpine,
+because the geoserver-compose project adds packages using apt,
+and Alpine does not support that.
 
 I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
@@ -10,6 +14,8 @@ any benefit to doing it that way. They are tightly integrated.
 Latest version of GeoServer is 2.15.1
 
 Latest version of GeoWebCache is 1.15.1
+
+Tomcat is 9.0.21 -- updated 6/21/2019 because of a security issue
 
 For complete information on GeoServer, see http://www.geoserver.org/
 
