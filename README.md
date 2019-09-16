@@ -11,9 +11,9 @@ I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
 any benefit to doing it that way. They are tightly integrated.
 
-Latest version of GeoServer is 2.15.1
+Latest version of GeoServer is 2.15.2
 
-Latest version of GeoWebCache is 1.15.1
+Latest version of GeoWebCache is 1.15.2
 
 Tomcat is 9.0.21 -- updated 6/21/2019 because of a security issue
 
