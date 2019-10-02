@@ -11,11 +11,11 @@ I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
 any benefit to doing it that way. They are tightly integrated.
 
-Latest version of GeoServer is 2.15.2
+Latest version of GeoServer is 2.16.0
 
-Latest version of GeoWebCache is 1.15.2
+Latest version of GeoWebCache is 1.16.0
 
-Tomcat is 9.0.21 -- updated 6/21/2019 because of a security issue
+Tomcat is 9.0.26
 
 For complete information on GeoServer, see http://www.geoserver.org/
 
@@ -44,14 +44,16 @@ The problem is that Tomcat runs as a service so there is no way I know of
 to do the deployment from a Dockerfile RUN command. Once Tomcat is started,
 it just runs forever. Maybe there is a Tomcat command line option??
 
-Anyway here are the steps for now:
+Anyway here are the steps for now.
+
+For some reason the output is not getting named so I have to look for the most recent image ID and put it in the command
 
 ````
 docker build -t geoserver .
-docker run -it --name geoserver_build -v geoserver_data:/geoserver geoserver
+docker run -it --name geoserver_build -v geoserver_data:/geoserver IMAGE_ID
 ````
 
-Now wait for Tomcat to start and watch log files... the last line will resemble this.
+Now wait for Tomcat to start and watch log files... you should see the WARs deploy and then the last line will resemble this.
 07-Mar-2019 19:47:01.390 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 68970 ms
 Then stop the container (from another window) and commit a new image.
 
@@ -60,17 +62,20 @@ docker stop geoserver_build
 docker commit geoserver_build geoserver_deployed
 ````
 
-Now you have an image called "geoserver" that has the geoserver.war file deployed.
-You can see what changed with the command "docker diff geoserver" if you want.
+When you stop the build image and commit you are creating a new image from a container.
+Now you have an image called "geoserver_deployed" that has the WAR files deployed.
+You can see what changed in the container with the command "docker diff geoserver" if you want.
 
 Now you can push the image to the Hub.
 
 ````
-GEOSERVER_VERSION=2.15.1
+GEOSERVER_VERSION=2.16.0
 
+# Send the numbered version up. This will take a few minutes.
 docker tag geoserver_deployed wildsong/geoserver:${GEOSERVER_VERSION}
 docker push wildsong/geoserver:${GEOSERVER_VERSION}
 
+# Send the "latest" version up, too. This will go fast. 
 docker tag geoserver_deployed wildsong/geoserver:latest
 docker push wildsong/geoserver:latest
 ````
