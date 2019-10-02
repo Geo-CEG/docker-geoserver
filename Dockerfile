@@ -7,9 +7,9 @@ MAINTAINER Brian H Wilson "brian@wildsong.biz"
 # Refer to the README.md for build and deploy instructions
 # ----------------------------------------------------------------
 
+# Make sure both of these exist. Versions don't always stay in sync.
 ENV GEOSERVER_VERSION 2.16.0
-ENV GEOSERVER_BASE_VERSION 2.16
-ENV GEOWEBCACHE_VERSION 1.16.0
+ENV GEOWEBCACHE_VERSION 1.16-RC
 
 ENV GEOSERVER_DATA_DIR /geoserver
 ENV GEOWEBCACHE_DATA_DIR /geoserver/gwc
