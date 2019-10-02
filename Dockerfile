@@ -1,7 +1,14 @@
-FROM tomcat:9-jre11
+FROM tomcat:9.0.26
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
+# ----------------------------------------------------------------
+# This Dockerfile produces an intermediary image!!!!
+# There are some manual steps
+# Refer to the README.md for build and deploy instructions
+# ----------------------------------------------------------------
+
 ENV GEOSERVER_VERSION 2.16.0
+ENV GEOSERVER_BASE_VERSION 2.16
 ENV GEOWEBCACHE_VERSION 1.16.0
 
 ENV GEOSERVER_DATA_DIR /geoserver
