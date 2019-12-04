@@ -8,8 +8,8 @@ MAINTAINER Brian H Wilson "brian@wildsong.biz"
 # ----------------------------------------------------------------
 
 # Make sure both of these exist. Versions don't always stay in sync.
-ENV GEOSERVER_VERSION 2.16.0
-ENV GEOWEBCACHE_VERSION 1.16-RC
+ARG GEOSERVER_VERSION
+ARG GEOWEBCACHE_VERSION
 
 ENV GEOSERVER_DATA_DIR /geoserver
 ENV GEOWEBCACHE_DATA_DIR /geoserver/gwc

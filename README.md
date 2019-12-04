@@ -1,4 +1,4 @@
-#docker-geoserver
+# docker-geoserver
 
 This project deploys GeoServer and GeoWebCache into 
 a standard Tomcat 9 container.
@@ -11,11 +11,13 @@ I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
 any benefit to doing it that way. They are tightly integrated.
 
-Latest version of GeoServer is 2.16.0
+2019-Dec-04
 
-Latest version of GeoWebCache is 1.16.0
+Define the version numbers in the Makefile.
 
-Tomcat is 9.0.26
+* Latest version of GeoServer is 2.16.1
+* Latest version of GeoWebCache is 1.16.1
+* Tomcat is 9.0.26
 
 For complete information on GeoServer, see http://www.geoserver.org/
 
@@ -27,63 +29,89 @@ I used to enable a Tomcat management account with a password but I never used it
 The container is intended to be hidden behind an nginx cache and is never
 accessed directly so it does not need the Tomcat manager GUI exposed.
 
-## Deployment
+## Examples
 
-I want the war files fully deployed when the image is pushed to hub.docker.com
-so that I can build a docker-compose set up and immediately add GeoServer plugins.
-The folder has to exist in the image for this to happen and the only way it
-gets created is when Tomcat automatically deploys the war files.
+I use this image in a Docker Compose project, and I also use it
+standalone as a GeoWebCache.
 
-The easiest way to do that that I can think of right now is to start
-the image, allow Tomcat to deploy, then stop it and push the image
-manually up to Docker Hub.
+For Docker Compose, see [Wildsong/geoserver-compose](https://github.com/Wildsong/geoserver-compose).
 
-Eventually I will figure out how to automate this, maybe tomorrow or next week.
+To use it in a Dockerfile, refer to the Docker Compose project and look
+in the file "Dockerfile.geoserver".
 
-The problem is that Tomcat runs as a service so there is no way I know of
-to do the deployment from a Dockerfile RUN command. Once Tomcat is started,
-it just runs forever. Maybe there is a Tomcat command line option??
+## Building an image for hub.docker.com
 
-Anyway here are the steps for now.
+Here are the steps that I use to create the images on hub.docker.com.
 
-
+**THESE INSTRUCTIONS ARE FOR ME**, all you should have to do is
+```bash
+   docker pull wildsong/geoserver:latest
 ```
-docker build -t geoserver_temporary .
+
+### Here's the problem
+
+I want the war files fully deployed when the image is pushed to
+hub.docker.com so that I can use it in docker-compose (or other
+Dockerfiles) *immediately* and add GeoServer plugins in a Dockerfile.
+The geoserver folder has to exist in the image for this to happen and
+the only way it gets created is when Tomcat automatically deploys the
+war files.
+
+### My solution
+
+The easiest way to get an image with Geoserver deployed that that I
+can think of right now is to start a container from the image, allow
+Tomcat to deploy, then stop it and push the image manually up to
+Docker Hub.
+
+Eventually I will figure out how to automate this.
+
+The problem is that Tomcat runs as a service so there is no way I know
+of to do the deployment from a Dockerfile RUN command. Once Tomcat is
+started, it just runs forever. Maybe there is a Tomcat command line
+option ("deploy only, don't run")??
+
+### Step by step, image build
+
+I built a Makefile to make it a little easier. Step one:
+```bash
+    make build
 ```
+
 This should exit cleanly with "Successfully tagged", not with 1000's of lines of HTML;
-the version number is probably wrong in the Dockerfile for one of the zips.
+if you get that then the version number is probably wrong in the Makefile for one of the zips.
+Check the first two lines of the Makefile against the archives in SourceForge.
 
-```
-docker run -it --name geoserver_build_container -v geoserver_data:/geoserver geoserver_temporary
+(You can look in https://sourceforge.net/projects/geoserver/files/GeoServer/ and
+https://sourceforge.net/projects/geowebcache/files/geowebcache/)
+
+Now launch a temporary container and wait for Tomcat to start successfully; watch the log file output.
+```bash
+    make image
 ```
 
-Now wait for Tomcat to start and watch log files... you should see the WARs deploy and then the last line will resemble this.
+This runs the container in foreground with output spilling out on your screen. Be patient.
+You should see the WARs deploy and then the last line will resemble this:
 ```
 07-Mar-2019 19:47:01.390 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 68970 ms
 ```
-If it starts up fast there is probably something that did not deploy. On a small computer it takes 2 minutes.
-Then stop the container (from another window) and commit a new image.
-
-```
-docker stop geoserver_build_container
-docker commit geoserver_build_container geoserver_deployed
-docker rm geoserver_build_container
+If it starts up fast there is probably something that did not deploy. On my small computer
+it takes 2 minutes or more. Then stop the container from another window and commit a new image,
+using this command.
+```bash
+    make commit
 ```
 
-When you stop the build image and commit you are creating a new image from a container.
-Now you have an image called "geoserver_deployed" that has the WAR files deployed.
+"Make commit" will stop the build image and commit the container to a new image called
+"geoserver_deployed", that will be an image that has the WAR files deployed.
 You can see what changed in the container with the command "docker diff geoserver" if you want.
 
-Now you can push the image to the Hub.
-
+Now you can push new images to the Hub.
+```bash
+    make push
 ```
-GEOSERVER_VERSION=2.16.0
 
-# Send the numbered version up. This will take a few minutes.
-docker tag geoserver_deployed wildsong/geoserver:${GEOSERVER_VERSION}
-docker push wildsong/geoserver:${GEOSERVER_VERSION}
+After the images are pushed, the geoserver_deployed image will be
+deleted.  You can now use "FROM wildsong/geoserver:latest" in a
+Dockerfile and get the latest geoserver.
 
-# Send the "latest" version up, too. This will go fast. 
-docker tag geoserver_deployed wildsong/geoserver:latest
-docker push wildsong/geoserver:latest
-```
