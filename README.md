@@ -9,15 +9,17 @@ and Alpine does not support that.
 
 I am including GeoWebCache here, I have tried several ways
 to deploy it to a separate container and just can't see there is
-any benefit to doing it that way. They are tightly integrated.
+any benefit for me in doing it that way. They are tightly integrated,
+it's just easier this way. I might do it differently on a production
+server.
 
-2019-Dec-04
+2021-Jun-02
 
 Define the version numbers in the Makefile.
 
-* Latest version of GeoServer is 2.16.1
-* Latest version of GeoWebCache is 1.16.1
-* Tomcat is 9.0.26
+* Latest version of GeoServer is 2.19.1
+* Latest version of GeoWebCache is 1.19.1
+* Tomcat is 9.0.46
 
 For complete information on GeoServer, see http://www.geoserver.org/
 
@@ -31,8 +33,8 @@ accessed directly so it does not need the Tomcat manager GUI exposed.
 
 ## Examples
 
-I use this image in a Docker Compose project, and I also use it
-standalone as a GeoWebCache.
+I use this image in a Docker Compose project, where it runs geoserver, nginx, pgadmin. Currently
+the PostGIS database runs on the host, not in Docker.
 
 For Docker Compose, see [Wildsong/geoserver-compose](https://github.com/Wildsong/geoserver-compose).
 
@@ -78,16 +80,18 @@ I built a Makefile to make it a little easier. Step one:
     make build
 ```
 
-This should exit cleanly with "Successfully tagged", not with 1000's of lines of HTML;
-if you get that then the version number is probably wrong in the Makefile for one of the zips.
-Check the first two lines of the Makefile against the archives in SourceForge.
+This should exit cleanly with "Successfully tagged", not with 1000's
+of lines of HTML; if you get that then the version number is probably
+wrong in the Makefile for one of the zips.  Check the first two lines
+of the Makefile against the archives in SourceForge.
 
 (You can look in https://sourceforge.net/projects/geoserver/files/GeoServer/ and
 https://sourceforge.net/projects/geowebcache/files/geowebcache/)
 
 Now launch a temporary container and wait for Tomcat to start successfully; watch the log file output.
+
 ```bash
-    make image
+make image
 ```
 
 This runs the container in foreground with output spilling out on your screen. Be patient.
@@ -98,8 +102,9 @@ You should see the WARs deploy and then the last line will resemble this:
 If it starts up fast there is probably something that did not deploy. On my small computer
 it takes 2 minutes or more. Then stop the container from another window and commit a new image,
 using this command.
+
 ```bash
-    make commit
+make commit
 ```
 
 "Make commit" will stop the build image and commit the container to a new image called
@@ -107,8 +112,9 @@ using this command.
 You can see what changed in the container with the command "docker diff geoserver" if you want.
 
 Now you can push new images to the Hub.
+
 ```bash
-    make push
+make push
 ```
 
 After the images are pushed, the geoserver_deployed image will be

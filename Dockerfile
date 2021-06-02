@@ -1,4 +1,4 @@
-FROM tomcat:9.0.26
+FROM tomcat:9.0.46
 MAINTAINER Brian H Wilson "brian@wildsong.biz"
 
 # ----------------------------------------------------------------
